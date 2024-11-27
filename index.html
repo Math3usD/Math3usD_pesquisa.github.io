@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecionar por ID</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            font-size: 1.5rem;
+            padding: 10px;
+            width: 300px;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+
+        button {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Redirecionar por ID</h1>
+    <form id="redirectForm">
+        <input 
+            type="text" 
+            id="ticketId" 
+            maxlength="7" 
+            minlength="7" 
+            required 
+            placeholder="Digite o ID (7 caracteres)"
+        />
+        <button type="submit">Abrir em nova aba</button>
+    </form>
+
+    <script>
+        document.getElementById("redirectForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio do formulário padrão
+            const ticketId = document.getElementById("ticketId").value;
+
+            // Verifica se o ID possui exatamente 7 caracteres
+            if (ticketId.length === 7) {
+                const url = `https://support.sevensuite.com.br/TicketDossier/${ticketId}/OpenBySequentialId`;
+                window.open(url, '_blank'); // Abre a URL em uma nova aba
+            } else {
+                alert("O ID deve ter exatamente 7 caracteres!");
+            }
+        });
+    </script>
+</body>
+</html>
