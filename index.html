@@ -18,40 +18,46 @@
             font-family: Arial, sans-serif;
         }
 
-        h1 {
-            margin-bottom: 20px;
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        input {
-            font-size: 1.5rem;
-            padding: 10px;
-            width: 300px;
+        textarea {
+            font-size: 1rem;
+            padding: 15px;
+            width: 600px;  /* Aumentando a largura */
+            height: 400px; /* Aumentando a altura */
             border: 2px solid #ffffff;
             border-radius: 5px;
             background-color: #1e1e1e;
             color: #ffffff;
+            resize: none;
             text-align: center;
+            overflow-y: auto; /* Adiciona barra de rolagem se necessário */
+            margin-bottom: 20px; /* Espaço entre a caixa e o botão */
         }
 
-        input:focus {
+        textarea:focus {
             outline: none;
             border-color: #4caf50;
         }
 
         button {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            padding: 10px 20px;
+            font-size: 1.3rem;
+            padding: 15px 30px;
             border: none;
             border-radius: 5px;
-            background-color: #4caf50;
-            color: #ffffff;
+            background-color: #ff5722; /* Cor laranja */
+            color: #000000;  /* Texto preto */
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 200px; /* Largura do botão */
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #e64a19; /* Cor laranja mais escura no hover */
         }
 
         button:disabled {
@@ -61,30 +67,31 @@
     </style>
 </head>
 <body>
-    <h1></h1>
     <form id="redirectForm">
-        <input 
-            type="text" 
-            id="ticketId" 
-            maxlength="7" 
-            minlength="7" 
-            required
-        />
+        <textarea 
+            id="ticketIds" 
+            required 
+        ></textarea>
         <button type="submit">Pesquisa</button>
     </form>
 
     <script>
         document.getElementById("redirectForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Impede o envio do formulário padrão
-            const ticketId = document.getElementById("ticketId").value;
 
-            // Verifica se o ID possui exatamente 7 caracteres
-            if (ticketId.length === 7) {
-                const url = `https://support.sevensuite.com.br/TicketDossier/${ticketId}/OpenBySequentialId`;
-                window.open(url, '_blank'); // Abre a URL em uma nova aba
-            } else {
-                alert("O ID deve ter exatamente 7 caracteres!");
-            }
+            const ticketIds = document.getElementById("ticketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
+
+            // Função para abrir as abas instantaneamente
+            ticketIds.forEach((ticketId) => {
+                ticketId = ticketId.trim(); // Remove espaços extras antes e depois do ID
+                if (ticketId.length === 7 && !isNaN(ticketId)) {
+                    const url = `https://support.sevensuite.com.br/TicketDossier/${ticketId}/OpenBySequentialId`;
+                    window.open(url, '_blank'); // Abre a URL em uma nova aba
+                } else {
+                    alert("Certifique-se de que todos os IDs têm exatamente 7 caracteres e são numéricos.");
+                    return; // Encerra a função caso algum ID esteja inválido
+                }
+            });
         });
     </script>
 </body>
