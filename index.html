@@ -64,6 +64,17 @@
             background-color: #555555;
             cursor: not-allowed;
         }
+
+        iframe {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 400px; /* Esticando o contador para o lado */
+            height: 80px; /* Ajustado para melhor visualização */
+            border: none;
+            background-color: #ff5722; /* Fundo laranja */
+            z-index: 999; /* Garante que o iframe fique no topo */
+        }
     </style>
 </head>
 <body>
@@ -74,6 +85,9 @@
         ></textarea>
         <button type="submit">Pesquisa</button>
     </form>
+
+    <!-- Adicionando o iframe do contador -->
+    <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-04-22T08:00:00@America%2FSao_Paulo" ></iframe>
 
     <script>
         document.getElementById("redirectForm").addEventListener("submit", function(event) {
