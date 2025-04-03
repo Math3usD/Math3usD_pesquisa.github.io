@@ -35,7 +35,7 @@
             color: #ffffff;
             resize: none;
             text-align: center;
-            overflow-y: auto; /* Adiciona barra de rolagem se necessário */
+            overflow-y: hidden; /* Remove a barra de rolagem vertical */
             margin-bottom: 20px; /* Espaço entre a caixa e o botão */
         }
 
@@ -65,15 +65,58 @@
             cursor: not-allowed;
         }
 
+        footer {
+            position: relative;
+            width: 100%;
+            background-color: #000000; /* Cor preta */
+            color: #ffffff;
+            display: flex;
+            justify-content: flex-start; /* Alinha à esquerda */
+            align-items: center;
+            padding: 10px 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+        }
+
         iframe {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            width: 400px; /* Esticando o contador para o lado */
-            height: 80px; /* Ajustado para melhor visualização */
-            border: none;
-            background-color: #ff5722; /* Fundo laranja */
-            z-index: 999; /* Garante que o iframe fique no topo */
+			width: 400px;
+			height: 80px;
+			border: none;
+			background-color: #000000;
+			margin-left: 20px;
+			overflow: hidden;
+			pointer-events: none; /* Desabilita as interações com o iframe */
+		}
+        .footer-overlay {
+            position: absolute;
+            top: 0;
+            right: 0; /* Posiciona à direita do iframe */
+            width: 10px; /* Largura da faixa preta para cobrir a barra de rolagem */
+            height: 100%; /* Faz a faixa preta cobrir toda a altura da barra de rolagem */
+            background-color: #000000; /* Faixa preta cobrindo a barra de rolagem */
+            z-index: 2; /* Garante que fique sobre o iframe */
+        }
+
+        .overlay-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px; /* Faixa preta na vertical à direita */
+            height: 100%;
+            background-color: #000000;
+            z-index: 3; /* Garante que fique sobre o iframe */
+        }
+
+        .right-border {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px; /* Largura da faixa preta no lado direito do iframe */
+            height: 100%; /* Cobrir toda a altura do iframe */
+            background-color: #000000; /* Faixa preta na parte direita */
+            z-index: 1; /* Garante que fique abaixo da faixa de rolagem */
         }
     </style>
 </head>
@@ -86,8 +129,12 @@
         <button type="submit">Pesquisa</button>
     </form>
 
-    <!-- Adicionando o iframe do contador -->
-    <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-04-22T08:00:00@America%2FSao_Paulo" ></iframe>
+    <footer>
+       <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-04-22T08:00:00@America%2FSao_Paulo" scrolling="no"></iframe>
+        <div class="footer-overlay"></div> <!-- Faixa preta para cobrir a parte direita da barra de rolagem -->
+        <div class="overlay-right"></div> <!-- Faixa preta para cobrir a área da rolagem -->
+        <div class="right-border"></div> <!-- Barra preta adicional no lado direito do iframe -->
+    </footer>
 
     <script>
         document.getElementById("redirectForm").addEventListener("submit", function(event) {
