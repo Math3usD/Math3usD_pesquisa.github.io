@@ -22,12 +22,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Espaço entre as caixas de pesquisa */
         }
 
         textarea {
             font-size: 1rem;
             padding: 15px;
-            width: 600px;  /* Aumentando a largura */
             height: 400px; /* Aumentando a altura */
             border: 2px solid #ffffff;
             border-radius: 5px;
@@ -37,6 +43,10 @@
             text-align: center;
             overflow-y: hidden; /* Remove a barra de rolagem vertical */
             margin-bottom: 20px; /* Espaço entre a caixa e o botão */
+        }
+
+        #ticketIds, #crmTicketIds {
+            width: 400px;  /* Largura igual para as duas caixas */
         }
 
         textarea:focus {
@@ -54,6 +64,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             width: 200px; /* Largura do botão */
+            margin-bottom: 10px; /* Espaço entre os botões */
         }
 
         button:hover {
@@ -81,78 +92,68 @@
         }
 
         iframe {
-			width: 400px;
-			height: 80px;
-			border: none;
-			background-color: #000000;
-			margin-left: 20px;
-			overflow: hidden;
-			pointer-events: none; /* Desabilita as interações com o iframe */
-		}
-        .footer-overlay {
-            position: absolute;
-            top: 0;
-            right: 0; /* Posiciona à direita do iframe */
-            width: 10px; /* Largura da faixa preta para cobrir a barra de rolagem */
-            height: 100%; /* Faz a faixa preta cobrir toda a altura da barra de rolagem */
-            background-color: #000000; /* Faixa preta cobrindo a barra de rolagem */
-            z-index: 2; /* Garante que fique sobre o iframe */
-        }
-
-        .overlay-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 10px; /* Faixa preta na vertical à direita */
-            height: 100%;
+            width: 400px;
+            height: 80px;
+            border: none;
             background-color: #000000;
-            z-index: 3; /* Garante que fique sobre o iframe */
-        }
-
-        .right-border {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 10px; /* Largura da faixa preta no lado direito do iframe */
-            height: 100%; /* Cobrir toda a altura do iframe */
-            background-color: #000000; /* Faixa preta na parte direita */
-            z-index: 1; /* Garante que fique abaixo da faixa de rolagem */
+            margin-left: 20px;
+            overflow: hidden;
+            pointer-events: none; /* Desabilita as interações com o iframe */
         }
     </style>
 </head>
 <body>
-    <form id="redirectForm">
-        <textarea 
-            id="ticketIds" 
-            required 
-        ></textarea>
-        <button type="submit">Pesquisa</button>
-    </form>
+    <div class="search-container">
+        <form id="ticketForm">
+            <textarea 
+                id="ticketIds" 
+                required 
+            ></textarea>
+            <button type="submit">Pesquisa</button>
+        </form>
+
+        <form id="crmForm">
+            <textarea 
+                id="crmTicketIds" 
+                required 
+            ></textarea>
+            <button type="submit">CRM</button>
+        </form>
+    </div>
 
     <footer>
-       <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-05-02T18:00:00@America%2FSao_Paulo" scrolling="no"></iframe>
-        <div class="footer-overlay"></div> <!-- Faixa preta para cobrir a parte direita da barra de rolagem -->
-        <div class="overlay-right"></div> <!-- Faixa preta para cobrir a área da rolagem -->
-        <div class="right-border"></div> <!-- Barra preta adicional no lado direito do iframe -->
+       <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-12-25T00:00:00@America%2FSao_Paulo" scrolling="no"></iframe>
     </footer>
 
     <script>
-        document.getElementById("redirectForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Impede o envio do formulário padrão
-
-            const ticketIds = document.getElementById("ticketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
-
-            // Função para abrir as abas instantaneamente
+        // Função para pesquisar tickets
+        function searchTickets(ticketIds, urlTemplate) {
             ticketIds.forEach((ticketId) => {
                 ticketId = ticketId.trim(); // Remove espaços extras antes e depois do ID
                 if (ticketId.length === 7 && !isNaN(ticketId)) {
-                    const url = `https://support.sevensuite.com.br/TicketDossier/${ticketId}/OpenBySequentialId`;
+                    const url = urlTemplate.replace('{ticketId}', ticketId);
                     window.open(url, '_blank'); // Abre a URL em uma nova aba
                 } else {
                     alert("Certifique-se de que todos os IDs têm exatamente 7 caracteres e são numéricos.");
                     return; // Encerra a função caso algum ID esteja inválido
                 }
             });
+        }
+
+        // Evento de submit para o formulário de Pesquisa
+        document.getElementById("ticketForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio do formulário padrão
+
+            const ticketIds = document.getElementById("ticketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
+            searchTickets(ticketIds, 'https://support.sevensuite.com.br/TicketDossier/{ticketId}/OpenBySequentialId'); // Chama a função de pesquisa com URL original
+        });
+
+        // Evento de submit para o formulário de CRM
+        document.getElementById("crmForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Impede o envio do formulário padrão
+
+            const crmTicketIds = document.getElementById("crmTicketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
+            searchTickets(crmTicketIds, 'https://grafana-adm.byseven.com.br/d/c0VSoEVV3/notas-adicionais-dos-chamados?var-idNota=0&var-Chamado={ticketId}'); // Chama a função de pesquisa com URL de CRM
         });
     </script>
 </body>
