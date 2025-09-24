@@ -16,113 +16,119 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1000px;
         }
 
         form {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .search-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px; /* Espaço entre as caixas de pesquisa */
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 450px;
         }
 
         textarea {
-            font-size: 1rem;
+            font-size: 1.1rem;
             padding: 15px;
-            height: 400px; /* Aumentando a altura */
+            height: 250px;
             border: 2px solid #ffffff;
             border-radius: 5px;
             background-color: #1e1e1e;
             color: #ffffff;
             resize: none;
             text-align: center;
-            overflow-y: hidden; /* Remove a barra de rolagem vertical */
-            margin-bottom: 20px; /* Espaço entre a caixa e o botão */
-        }
-
-        #ticketIds, #crmTicketIds {
-            width: 400px;  /* Largura igual para as duas caixas */
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #4caf50;
+            overflow-y: hidden;
+            margin-bottom: 25px;
+            width: 100%;
         }
 
         button {
-            font-size: 1.3rem;
-            padding: 15px 30px;
+            font-size: 1.1rem;
+            padding: 12px 25px;
             border: none;
             border-radius: 5px;
-            background-color: #000000; /* Cor laranja */
-            color: #ffffff;  /* Texto preto */
+            background-color: #000000;
+            color: #ffffff;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            width: 200px; /* Largura do botão */
-            margin-bottom: 10px; /* Espaço entre os botões */
+            width: 200px;
         }
 
         button:hover {
-            background-color: #000000; /* Cor laranja mais escura no hover */
+            background-color: #333333;
         }
 
         button:disabled {
-            background-color: #000000;
+            background-color: #666666;
             cursor: not-allowed;
         }
 
         footer {
-            position: relative;
             width: 100%;
-            background-color: #000000; /* Cor preta */
+            background-color: #000000;
             color: #ffffff;
             display: flex;
-            justify-content: flex-start; /* Alinha à esquerda */
-            align-items: center;
-            padding: 10px 0;
+            padding: 10px 20px;
             position: absolute;
             bottom: 0;
-            left: 0;
-            z-index: 1;
+            right: 0;
+            justify-content: space-between;
         }
 
         iframe {
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 80px;
             border: none;
             background-color: #000000;
-            margin-left: 20px;
-            overflow: hidden;
-            pointer-events: none; /* Desabilita as interações com o iframe */
+            margin-top: 10px;
+            pointer-events: none;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            color: #ffffff;
+            padding: 10px;
+            background-color: #000000;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
     <div class="search-container">
         <form id="ticketForm">
-            <textarea 
-                id="ticketIds" 
-                required 
+            <textarea
+                id="ticketIds"
+                required
             ></textarea>
             <button type="submit">Pesquisa</button>
         </form>
 
         <form id="crmForm">
-            <textarea 
-                id="crmTicketIds" 
-                required 
+            <textarea
+                id="crmTicketIds"
+                required
             ></textarea>
             <button type="submit">CRM</button>
         </form>
     </div>
 
     <footer>
-       <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-12-25T00:00:00@America%2FSao_Paulo" scrolling="no"></iframe>
+        <iframe id="online-alarm-kur-iframe" src="https://embed-countdown.onlinealarmkur.com/pt/#2025-12-25T00:00:00@America%2FSao_Paulo" scrolling="no"></iframe>
+        <div class="countdown" id="countdown"></div>
     </footer>
 
     <script>
@@ -130,8 +136,10 @@
         function searchTickets(ticketIds, urlTemplate) {
             ticketIds.forEach((ticketId) => {
                 ticketId = ticketId.trim(); // Remove espaços extras antes e depois do ID
+                console.log(`Pesquisando o ticket: ${ticketId}`);  // Adicione esta linha para depuração
                 if (ticketId.length === 7 && !isNaN(ticketId)) {
                     const url = urlTemplate.replace('{ticketId}', ticketId);
+                    console.log(`URL gerada: ${url}`);  // Verifique a URL gerada
                     window.open(url, '_blank'); // Abre a URL em uma nova aba
                 } else {
                     alert("Certifique-se de que todos os IDs têm exatamente 7 caracteres e são numéricos.");
@@ -140,21 +148,58 @@
             });
         }
 
+        // Função que trata a entrada de texto, separando por vírgula ou linha
+        function processInput(input) {
+            const processed = input
+                .trim() // Remove espaços extras no início e fim
+                .split(/[\s,]+/) // Divide por espaços ou vírgulas
+                .map(id => id.trim()) // Remove espaços extras de cada ID
+                .filter(id => id.length === 7 && !isNaN(id)); // Filtra IDs válidos
+            console.log(processed);  // Adicione esta linha para depuração
+            return processed;
+        }
+
         // Evento de submit para o formulário de Pesquisa
         document.getElementById("ticketForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Impede o envio do formulário padrão
-
-            const ticketIds = document.getElementById("ticketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
-            searchTickets(ticketIds, 'https://support.sevensuite.com.br/TicketDossier/{ticketId}/OpenBySequentialId'); // Chama a função de pesquisa com URL original
+            console.log("Formulário de pesquisa enviado");  // Adicione esta linha para depuração
+            const ticketIds = processInput(document.getElementById("ticketIds").value); // Processa a entrada
+            searchTickets(ticketIds, 'https://support.sevensuite.com.br/TicketDossier/{ticketId}/OpenBySequentialId');
         });
 
         // Evento de submit para o formulário de CRM
         document.getElementById("crmForm").addEventListener("submit", function(event) {
             event.preventDefault(); // Impede o envio do formulário padrão
-
-            const crmTicketIds = document.getElementById("crmTicketIds").value.trim().split('\n'); // Divide por linha e remove espaços extras
-            searchTickets(crmTicketIds, 'https://grafana-adm.byseven.com.br/d/c0VSoEVV3/notas-adicionais-dos-chamados?var-idNota=0&var-Chamado={ticketId}'); // Chama a função de pesquisa com URL de CRM
+            const crmTicketIds = processInput(document.getElementById("crmTicketIds").value); // Processa a entrada
+            searchTickets(crmTicketIds, 'https://grafana-adm.byseven.com.br/d/c0VSoEVV3/notas-adicionais-dos-chamados?var-idNota=0&var-Chamado={ticketId}');
         });
+
+        // Função para calcular o tempo restante até as 18 horas
+        function updateCountdown() {
+            const now = new Date();
+            let targetTime = new Date();
+            targetTime.setHours(18, 0, 0, 0); // Defina as 18 horas de hoje
+
+            // Se já passou das 18h, defina para as 18h do próximo dia
+            if (now.getHours() >= 18) {
+                targetTime.setDate(targetTime.getDate() + 1);
+            }
+
+            const remainingTime = targetTime - now;
+
+            if (remainingTime > 0) {
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                document.getElementById("countdown").textContent = `${hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            } else {
+                document.getElementById("countdown").textContent = "00:00:00";
+            }
+        }
+
+        // Atualiza a contagem regressiva a cada segundo
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Inicializa a contagem
     </script>
 </body>
 </html>
